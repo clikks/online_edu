@@ -1,3 +1,6 @@
-body {
-    background-color: red;
+.form {
+  /* set form width 400px */
+  width: 400px;
+  /* set form in center */
+  margin: 0 auto;
 }
