@@ -15,9 +15,15 @@
     </div>
     
     {% else %}
-    <div class="form-group">
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
         {{ field.label }} {{field(class='form-control') }}
+        {% if field.errors %}
+          {% for error in field.errors %}
+          <psan class="help-block">{{ error }}</span>
+          {% endfor %}
+        {% endif %}
     </div>
+
     {% endif %}
   {% endfor %}
 </form>
