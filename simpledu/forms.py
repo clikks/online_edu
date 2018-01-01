@@ -2,9 +2,9 @@
 # coding: utf-8
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError
-from wtforms.validators import Length, Email, EqualTo, Required
-from simpledu.models import db, User
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, ValidationError, TextAreaField, IntegerField
+from wtforms.validators import Length, Email, EqualTo, Required, URL, NumberRange
+from simpledu.models import db, User, Course
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[Required(), Length(3,24)])
@@ -48,4 +48,28 @@ class LoginForm(FlaskForm):
             raise ValidationError('Password Error')
 
 
+class CourseForm(FlaskForm):
+    name = StringField('Course Name', validators=[Required(), Length(5, 32)])
+    description = TextAreaField('Couse Summary', validators=[Required(), Length(20, 256)])
+    image_url = StringField('Cover Image URL', validators=[Required(), URL()])
+    author_id = IntegerField('Author ID', validators=[Required(), NumberRange(min=1, message='Invalid User ID')])
+    submit = SubmitField('Submit')
 
+    def validate_author_id(self, field):
+        if not User.query.get(self.author_id.data):
+            raise ValidationError('User not exists')
+
+    def create_course(self):
+        course = Course()
+        self.populate_obj(course)
+        db.session.add(course)
+        db.session.commit()
+
+        return course
+
+    def update_course(self, course):
+        self.populate_obj(course)
+        db.session.add(course)
+        db.session.commit()
+
+        return course   
